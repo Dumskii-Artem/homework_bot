@@ -30,8 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения"""
-
+    """Проверяет доступность переменных окружения."""
     missing = []
 
     if not PRACTICUM_TOKEN:
@@ -48,8 +47,7 @@ def check_tokens():
 
 
 def send_message(bot, message):
-    """Отправляет сообщение в Telegram-чат"""
-
+    """Отправляет сообщение в Telegram-чат."""
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logger.debug(f'Отправлено сообщение {message}')
@@ -59,7 +57,6 @@ def send_message(bot, message):
 
 def get_api_answer(timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
-
     try:
         response = requests.get(
             ENDPOINT,
@@ -81,8 +78,7 @@ def get_api_answer(timestamp):
 
 
 def check_response(response):
-    """Проверяет ответ API на соответствие документации из урока"""
-
+    """Проверяет ответ API на соответствие документации из урока."""
     if not isinstance(response, dict):
         raise TypeError(f'В ответе {type(response)} вместо словаря')
     if 'homeworks' not in response:
@@ -96,7 +92,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о домашней работе статус этой работы"""
+    """Извлекает из информации о домашней работе статус этой работы."""
     for key in homework_keys:
         if key not in homework:
             raise KeyError(f'В ответе нет ключа "{key}"')
@@ -112,7 +108,6 @@ def parse_status(homework):
 
 def main():
     """Запуск и работа бота."""
-
     check_tokens()
     bot = TeleBot(TELEGRAM_TOKEN)
     timestamp = int(time.time())
@@ -121,7 +116,7 @@ def main():
     while True:
         try:
             response = get_api_answer(timestamp)
-            timestamp=response.get('current_date')
+            timestamp = response.get('current_date')
             homeworks = check_response(response)
             if homeworks:
                 for homework in homeworks:
@@ -138,8 +133,8 @@ def main():
                 if send_message(bot, message):
                     last_error_message = message
 
-
         time.sleep(RETRY_PERIOD)
+
 
 if __name__ == '__main__':
     logging.basicConfig(
