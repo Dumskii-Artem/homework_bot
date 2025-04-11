@@ -17,9 +17,6 @@ RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
-#HOMEWORK_NAME='Dumskii-Artem__homework_bot-master.zip',
-#HOMEWORK_NAME='Dumskii-Artem__django_sprint4.zip'
-
 HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
@@ -31,8 +28,10 @@ homework_keys = ['homework_name', 'status']
 
 logger = logging.getLogger(__name__)
 
+
 def check_tokens():
     """Проверяет доступность переменных окружения"""
+
     missing = []
 
     if not PRACTICUM_TOKEN:
@@ -47,8 +46,10 @@ def check_tokens():
         logger.critical(message)
         raise ValueError(message)
 
+
 def send_message(bot, message):
     """Отправляет сообщение в Telegram-чат"""
+
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logger.debug(f'Отправлено сообщение {message}')
@@ -56,9 +57,9 @@ def send_message(bot, message):
         logger.error(f'Ошибка отправки сообщения {error}')
 
 
-
 def get_api_answer(timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
+
     try:
         response = requests.get(
             ENDPOINT,
@@ -81,6 +82,7 @@ def get_api_answer(timestamp):
 
 def check_response(response):
     """Проверяет ответ API на соответствие документации из урока"""
+
     if not isinstance(response, dict):
         raise TypeError(f'В ответе {type(response)} вместо словаря')
     if 'homeworks' not in response:
@@ -110,6 +112,7 @@ def parse_status(homework):
 
 def main():
     """Запуск и работа бота."""
+
     check_tokens()
     bot = TeleBot(TELEGRAM_TOKEN)
     timestamp = int(time.time())
@@ -137,7 +140,6 @@ def main():
 
 
         time.sleep(RETRY_PERIOD)
-
 
 if __name__ == '__main__':
     logging.basicConfig(
