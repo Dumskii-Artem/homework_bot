@@ -53,10 +53,11 @@ UNKNOWN_STATUS = 'Неизвестный статус {}'
 REQUEST_PARAMETERS = (
     'Параметры запроса: url={url}, headers={headers}, params={params}'
 )
-ENDPOINT_CHECK_ERROR = (f'Произошла ошибка запроса: {{error}}. '
+
+ENDPOINT_CHECK_ERROR = ('Произошла ошибка запроса: {error}. '
                         f'{REQUEST_PARAMETERS}')
-ENDPOINT_ANSWER_CODE = 'Ошибка ответа: {{code}}. {REQUEST_PARAMETERS}'
-API_DATA_ERROR = ('Ключ ответ API: "{{key}}", Значение: {{answer}}. '
+ENDPOINT_ANSWER_CODE = (f'Ошибка ответа: {{code}}. {REQUEST_PARAMETERS}')
+API_DATA_ERROR = ('Ключ ответ API: "{key}", Значение: {answer}. '
                   f'{REQUEST_PARAMETERS}')
 
 
@@ -161,8 +162,8 @@ def main():
         except Exception as error:
             message = PROGRAM_ERROR.format(error)
             logger.error(message)
-            if (message != last_error_message and
-                    send_message(bot, message)):
+            if (message != last_error_message
+                    and send_message(bot, message)):
                 last_error_message = message
         finally:
             time.sleep(RETRY_PERIOD)
