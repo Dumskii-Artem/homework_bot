@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 import time
-from math import trunc
 
 import requests
 from dotenv import load_dotenv
@@ -24,7 +23,7 @@ HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 YP_REQUEST_PARAMS = dict(
     url='https://practicum.yandex.ru/api/user_api/homework_statuses/',
     headers=HEADERS,
-    params={'from_date':None},   #добавим перед запросом
+    params={'from_date': None},   # добавим перед запросом
     timeout=5,
 )
 
@@ -44,7 +43,7 @@ HOMEWORKS_INSTEAD_LIST = 'В ответе "homewokrs" вместо списка 
 MISSED_TOKENS = 'Отсутствуют обязательные переменные: {}'
 MESSAGE_SENT_OK = 'Отправлено сообщение {}'
 MESSAGE_SENT_ERROR = ('При отправке сообщения "{message}"'
-                     ' произошла ошибка {error}')
+                      ' произошла ошибка {error}')
 NEW_STATUS = 'Изменился статус проверки работы "{name}". {verdict}'
 NO_KEY_IN_ANSWER = 'В ответе нет ключа "{}"'
 PROGRAM_ERROR = 'Сбой в работе программы: {}'
@@ -78,7 +77,8 @@ def send_message(bot, message):
         logger.debug(MESSAGE_SENT_OK.format(message))
         return True
     except Exception as error:
-        logger.error( MESSAGE_SENT_ERROR.format(message=message, error=error),
+        logger.error(
+            MESSAGE_SENT_ERROR.format(message=message, error=error),
             exc_info=True
         )
         return False
@@ -92,7 +92,7 @@ def get_api_answer(timestamp):
         response = requests.get(**request_params)
     except requests.RequestException as error:
         raise ConnectionError(
-            ENDPOINT_CHECK_ERROR.format( error=error, **request_params)
+            ENDPOINT_CHECK_ERROR.format(error=error, **request_params)
         )
 
     if response.status_code != requests.codes.ok:
@@ -148,7 +148,7 @@ def main():
     timestamp = int(time.time())
     last_error_message = None
 
-    first_time=True
+    first_time = True
 
     while True:
 
