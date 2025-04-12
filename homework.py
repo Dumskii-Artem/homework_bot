@@ -21,7 +21,7 @@ ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 YP_REQUEST_PARAMS = dict(
-    url='https://practicum.yandex.ru/api/user_api/homework_statuses/',
+    url=ENDPOINT,
     headers=HEADERS,
     params={'from_date': None},   # добавим перед запросом
     timeout=5,
@@ -53,11 +53,11 @@ UNKNOWN_STATUS = 'Неизвестный статус {}'
 REQUEST_PARAMETERS = (
     'Параметры запроса: url={url}, headers={headers}, params={params}'
 )
-ENDPOINT_CHECK_ERROR = ('Произошла ошибка запроса: {error}. '
-                        + REQUEST_PARAMETERS)
-ENDPOINT_ANSWER_CODE = 'Ошибка ответа: {code}. ' + REQUEST_PARAMETERS
-API_DATA_ERROR = ('Ключ ответ API: "{key}", Значение: {answer}. '
-                  + REQUEST_PARAMETERS)
+ENDPOINT_CHECK_ERROR = (f'Произошла ошибка запроса: {{error}}. '
+                        f'{REQUEST_PARAMETERS}')
+ENDPOINT_ANSWER_CODE = 'Ошибка ответа: {{code}}. {REQUEST_PARAMETERS}'
+API_DATA_ERROR = ('Ключ ответ API: "{{key}}", Значение: {{answer}}. '
+                  f'{REQUEST_PARAMETERS}')
 
 
 def check_tokens():
@@ -148,15 +148,7 @@ def main():
     timestamp = int(time.time())
     last_error_message = None
 
-    first_time = True
-
     while True:
-
-        if first_time:
-            first_time = False
-        else:
-            time.sleep(RETRY_PERIOD)
-
         try:
             response = get_api_answer(timestamp)
             homeworks = check_response(response)
@@ -169,9 +161,11 @@ def main():
         except Exception as error:
             message = PROGRAM_ERROR.format(error)
             logger.error(message)
-            if message != last_error_message:
-                if send_message(bot, message):
-                    last_error_message = message
+            if (message != last_error_message and
+                    send_message(bot, message)):
+                last_error_message = message
+        finally:
+            time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
@@ -179,7 +173,7 @@ if __name__ == '__main__':
         level=logging.DEBUG,
         format=(
             '%(funcName)s:%(lineno)d, %(asctime)s,'
-            ' %(levelname)s, %(message)s, %(name)s'
+            ' %(levelname)s, %(name)s, %(message)s'
         ),
         handlers=[
             logging.StreamHandler(sys.stdout),
